@@ -2,6 +2,13 @@ body {
   margin: 20px;
 }
 
+#score,
+#rank {
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  margin: 8px 0;
+}
+
 code {
   background: #d0d0d5;
 }
