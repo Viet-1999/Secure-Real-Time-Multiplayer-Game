@@ -9,7 +9,6 @@ const http = require("http");
 const socketIO = require("socket.io");
 const path = require("path");
 
-const userInput = document.getElementById("userInput").value;
 const Player = require("./public/Player.mjs").default;
 const Collectible = require("./public/Collectible.mjs").default;
 
