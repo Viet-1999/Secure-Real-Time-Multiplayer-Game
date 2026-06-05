@@ -61,6 +61,21 @@ app.route("/").get(function (req, res) {
   res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
+// FCC checks tests 16-19 via /_api/app-info (must register before fcctesting.js route)
+app.get("/_api/app-info", function (req, res) {
+  const headers = {};
+  const rawHeaders = res.getHeaders();
+
+  Object.keys(rawHeaders).forEach((header) => {
+    if (!/^access-control-/i.test(header)) {
+      headers[header] = rawHeaders[header];
+    }
+  });
+
+  delete headers["strict-transport-security"];
+  res.json({ headers });
+});
+
 fccTestingRoutes(app);
 
 app.use(function (req, res) {
