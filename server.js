@@ -4,10 +4,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
+
 const http = require("http");
 const socketIO = require("socket.io");
 const path = require("path");
 
+const userInput = document.getElementById("userInput").value;
 const Player = require("./public/Player.mjs").default;
 const Collectible = require("./public/Collectible.mjs").default;
 
@@ -24,6 +26,22 @@ const speed = 10;
 const canvasWidth = 640;
 const canvasHeight = 480;
 const avatarSize = 10;
+
+app.use(helmet.noSniff());
+app.use(cors({ origin: "*" }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate",
+  );
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  res.setHeader("Surrogate-Control", "no-store");
+  next();
+});
+document.getElementById("outputDiv").textContent = userInput;
 
 function spawnCollectible() {
   const collectible = new Collectible({
@@ -46,7 +64,7 @@ app.use(
     noCache: true,
     xssFilter: true,
     hidePoweredBy: false,
-  })
+  }),
 );
 app.use(helmet.hidePoweredBy({ setTo: "PHP 7.4.3" }));
 
