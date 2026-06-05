@@ -4,7 +4,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const helmet = require("helmet");
-
 const http = require("http");
 const socketIO = require("socket.io");
 const path = require("path");
@@ -26,20 +25,21 @@ const canvasWidth = 640;
 const canvasHeight = 480;
 const avatarSize = 10;
 
-app.use(helmet.noSniff());
-app.use(cors({ origin: "*" }));
-app.use(bodyParser.urlencoded({ extended: true }));
+// FCC tests 16-19: security headers via Helmet v3
+app.use(
+  helmet({
+    noCache: true,
+    xssFilter: true,
+    hidePoweredBy: false,
+  })
+);
+app.use(helmet.hidePoweredBy({ setTo: "PHP 7.4.3" }));
+
 app.use(bodyParser.json());
-app.use((req, res, next) => {
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate",
-  );
-  res.setHeader("Pragma", "no-cache");
-  res.setHeader("Expires", "0");
-  res.setHeader("Surrogate-Control", "no-store");
-  next();
-});
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors({ origin: "*" }));
+app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 function spawnCollectible() {
   const collectible = new Collectible({
@@ -56,21 +56,6 @@ function clampPosition(player) {
   player.x = Math.max(0, Math.min(player.x, canvasWidth - avatarSize));
   player.y = Math.max(0, Math.min(player.y, canvasHeight - avatarSize));
 }
-
-app.use(
-  helmet({
-    noCache: true,
-    xssFilter: true,
-    hidePoweredBy: false,
-  }),
-);
-app.use(helmet.hidePoweredBy({ setTo: "PHP 7.4.3" }));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
-app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/assets", express.static(path.join(__dirname, "assets")));
 
 app.route("/").get(function (req, res) {
   res.sendFile(path.join(__dirname, "views", "index.html"));
